@@ -134,41 +134,128 @@ impl Default for Checksum {
 pub enum Compression {
     /// Use value from the parent
     #[strum(serialize = "inherit")]
-    Inherit = 0,
+    Inherit      = 0,
     /// Auto-select most appropriate algorithm. If possible uses LZ4, if not then LZJB.
     #[strum(serialize = "on")]
-    On      = 1,
+    On           = 1,
     /// Disables compression.
     #[strum(serialize = "off")]
-    Off     = 2,
+    Off          = 2,
     #[strum(serialize = "lzjb")]
-    LZJB    = 3,
+    LZJB         = 3,
     /// The lz4 compression algorithm is a high-performance replacement for the lzjb algorithm.
     #[strum(serialize = "lz4")]
-    LZ4     = 15,
+    LZ4          = 15,
     /// The zle compression algorithm compresses runs of zeros.
     #[strum(serialize = "zle")]
-    ZLE     = 14,
+    ZLE          = 14,
     /// Fastest gzip level
     #[strum(serialize = "gzip-1")]
-    Gzip1   = 5,
+    Gzip1        = 5,
     #[strum(serialize = "gzip-2")]
-    Gzip2   = 6,
+    Gzip2        = 6,
     #[strum(serialize = "gzip-3")]
-    Gzip3   = 7,
+    Gzip3        = 7,
     #[strum(serialize = "gzip-4")]
-    Gzip4   = 8,
+    Gzip4        = 8,
     #[strum(serialize = "gzip-5")]
-    Gzip5   = 9,
+    Gzip5        = 9,
     #[strum(serialize = "gzip-6")]
-    Gzip6   = 10,
+    Gzip6        = 10,
     #[strum(serialize = "gzip-7")]
-    Gzip7   = 11,
+    Gzip7        = 11,
     #[strum(serialize = "gzip-8")]
-    Gzip8   = 12,
+    Gzip8        = 12,
     /// Slowest gzip level
     #[strum(serialize = "gzip-9")]
-    Gzip9   = 13,
+    Gzip9        = 13,
+    /// The zstd compression algorithm. With this setting, the level is inherited.
+    #[strum(serialize = "zstd")]
+    Zstd         = 16,
+    /// Fastest regular zstd level
+    #[strum(serialize = "zstd-1")]
+    Zstd1        = 16 | 1 << 7,
+    #[strum(serialize = "zstd-2")]
+    Zstd2        = 16 | 2 << 7,
+    #[strum(serialize = "zstd-3")]
+    Zstd3        = 16 | 3 << 7,
+    #[strum(serialize = "zstd-4")]
+    Zstd4        = 16 | 4 << 7,
+    #[strum(serialize = "zstd-5")]
+    Zstd5        = 16 | 5 << 7,
+    #[strum(serialize = "zstd-6")]
+    Zstd6        = 16 | 6 << 7,
+    #[strum(serialize = "zstd-7")]
+    Zstd7        = 16 | 7 << 7,
+    #[strum(serialize = "zstd-8")]
+    Zstd8        = 16 | 8 << 7,
+    #[strum(serialize = "zstd-9")]
+    Zstd9        = 16 | 9 << 7,
+    #[strum(serialize = "zstd-10")]
+    Zstd10       = 16 | 10 << 7,
+    #[strum(serialize = "zstd-11")]
+    Zstd11       = 16 | 11 << 7,
+    #[strum(serialize = "zstd-12")]
+    Zstd12       = 16 | 12 << 7,
+    #[strum(serialize = "zstd-13")]
+    Zstd13       = 16 | 13 << 7,
+    #[strum(serialize = "zstd-14")]
+    Zstd14       = 16 | 14 << 7,
+    #[strum(serialize = "zstd-15")]
+    Zstd15       = 16 | 15 << 7,
+    #[strum(serialize = "zstd-16")]
+    Zstd16       = 16 | 16 << 7,
+    #[strum(serialize = "zstd-17")]
+    Zstd17       = 16 | 17 << 7,
+    #[strum(serialize = "zstd-18")]
+    Zstd18       = 16 | 18 << 7,
+    /// Slowest regular zstd level
+    #[strum(serialize = "zstd-19")]
+    Zstd19       = 16 | 19 << 7,
+    /// Slowest zstd-fast level
+    #[strum(serialize = "zstd-fast-1")]
+    ZstdFast1    = 16 | 103 << 7,
+    #[strum(serialize = "zstd-fast-2")]
+    ZstdFast2    = 16 | 104 << 7,
+    #[strum(serialize = "zstd-fast-3")]
+    ZstdFast3    = 16 | 105 << 7,
+    #[strum(serialize = "zstd-fast-4")]
+    ZstdFast4    = 16 | 106 << 7,
+    #[strum(serialize = "zstd-fast-5")]
+    ZstdFast5    = 16 | 107 << 7,
+    #[strum(serialize = "zstd-fast-6")]
+    ZstdFast6    = 16 | 108 << 7,
+    #[strum(serialize = "zstd-fast-7")]
+    ZstdFast7    = 16 | 109 << 7,
+    #[strum(serialize = "zstd-fast-8")]
+    ZstdFast8    = 16 | 110 << 7,
+    #[strum(serialize = "zstd-fast-9")]
+    ZstdFast9    = 16 | 111 << 7,
+    #[strum(serialize = "zstd-fast-10")]
+    ZstdFast10   = 16 | 112 << 7,
+    #[strum(serialize = "zstd-fast-20")]
+    ZstdFast20   = 16 | 113 << 7,
+    #[strum(serialize = "zstd-fast-30")]
+    ZstdFast30   = 16 | 114 << 7,
+    #[strum(serialize = "zstd-fast-40")]
+    ZstdFast40   = 16 | 115 << 7,
+    #[strum(serialize = "zstd-fast-50")]
+    ZstdFast50   = 16 | 116 << 7,
+    #[strum(serialize = "zstd-fast-60")]
+    ZstdFast60   = 16 | 117 << 7,
+    #[strum(serialize = "zstd-fast-70")]
+    ZstdFast70   = 16 | 118 << 7,
+    #[strum(serialize = "zstd-fast-80")]
+    ZstdFast80   = 16 | 119 << 7,
+    #[strum(serialize = "zstd-fast-90")]
+    ZstdFast90   = 16 | 120 << 7,
+    #[strum(serialize = "zstd-fast-100")]
+    ZstdFast100  = 16 | 121 << 7,
+    #[strum(serialize = "zstd-fast-500")]
+    ZstdFast500  = 16 | 122 << 7,
+    /// Fastest zstd-fast level
+    #[strum(serialize = "zstd-fast-1000")]
+    ZstdFast1000 = 16 | 123 << 7,
 }
 
 impl Default for Compression {

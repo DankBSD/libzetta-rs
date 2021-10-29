@@ -29,6 +29,15 @@ impl ZfsEngine for DelegatingZfsEngine {
         self.lzc.snapshot(snapshots, user_properties)
     }
 
+    fn clone_snapshot<T: Into<PathBuf>, F: Into<PathBuf>>(
+        &self,
+        fsname: T,
+        origin: F,
+        user_properties: Option<HashMap<String, String>>,
+    ) -> Result<()> {
+        self.lzc.clone_snapshot(fsname, origin, user_properties)
+    }
+
     fn bookmark(&self, bookmarks: &[BookmarkRequest]) -> Result<()> { self.lzc.bookmark(bookmarks) }
 
     fn destroy<N: Into<PathBuf>>(&self, name: N) -> Result<()> { self.open3.destroy(name) }

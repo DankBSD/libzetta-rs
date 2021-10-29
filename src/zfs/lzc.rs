@@ -235,6 +235,41 @@ impl ZfsEngine for ZfsLzc {
         }
     }
 
+    fn clone_snapshot<T: Into<PathBuf>, F: Into<PathBuf>>(
+        &self,
+        fsname: T,
+        origin: F,
+        user_properties: Option<HashMap<String, String>>,
+    ) -> Result<()> {
+        let fsname = fsname.into();
+        let fsname_c_string = fsname.to_str().expect("Non UTF-8 name").into_cstr();
+
+        let origin = origin.into();
+        let origin_c_string = origin.to_str().expect("Non UTF-8 name").into_cstr();
+
+        let mut props = NvList::default();
+        if let Some(user_properties) = user_properties {
+            for (key, value) in user_properties {
+                props.insert_string(&key, &value)?;
+            }
+        }
+
+        let errno = unsafe {
+            zfs_core_sys::lzc_clone(
+                fsname_c_string.as_ptr(),
+                origin_c_string.as_ptr(),
+                props.as_ptr(),
+            )
+        };
+        match errno {
+            0 => Ok(()),
+            _ => {
+                let io_error = std::io::Error::from_raw_os_error(errno);
+                Err(Error::Io(io_error))
+            },
+        }
+    }
+
     fn bookmark(&self, bookmarks: &[BookmarkRequest]) -> Result<()> {
         let validation_errors: Vec<ValidationError> = bookmarks
             .iter()

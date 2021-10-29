@@ -92,6 +92,17 @@ pub trait ZfsEngine {
         Err(Error::Unimplemented)
     }
 
+    /// Clone a snapshot into a dataset.
+    #[cfg_attr(tarpaulin, skip)]
+    fn clone_snapshot<T: Into<PathBuf>, F: Into<PathBuf>>(
+        &self,
+        _fsname: T,
+        _origin: F,
+        _user_properties: Option<HashMap<String, String>>,
+    ) -> Result<()> {
+        Err(Error::Unimplemented)
+    }
+
     /// Create bookmarks as one atomic operation.
     #[cfg_attr(tarpaulin, skip)]
     fn bookmark(&self, _snapshots: &[BookmarkRequest]) -> Result<()> { Err(Error::Unimplemented) }

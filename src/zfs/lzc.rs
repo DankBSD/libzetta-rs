@@ -51,13 +51,11 @@ impl ZfsLzc {
         flags: SendFlags,
     ) -> Result<()> {
         let snapshot =
-            CString::new(path.to_str().unwrap()).expect("Failed to create CString from path");
+            CString::new(path.to_str().ok_or_else(|| Error::PathNotUTF8(path.clone()))?)?;
         let snapshot_ptr = snapshot.as_ptr();
-        let from_cstr = from.map(|f| {
-            CString::new(f.to_str().unwrap()).expect("Failed to create CString from path")
-        });
         let fd_raw = fd;
-        let errno = if let Some(src) = from_cstr {
+        let errno = if let Some(from) = from {
+            let src = CString::new(from.to_str().ok_or_else(|| Error::PathNotUTF8(from.clone()))?)?;
             unsafe { zfs_core_sys::lzc_send(snapshot_ptr, src.as_ptr(), fd_raw, flags.bits) }
         } else {
             unsafe { zfs_core_sys::lzc_send(snapshot_ptr, std::ptr::null(), fd_raw, flags.bits) }
@@ -76,7 +74,7 @@ impl ZfsLzc {
 impl ZfsEngine for ZfsLzc {
     fn exists<N: Into<PathBuf>>(&self, name: N) -> Result<bool> {
         let path = name.into();
-        let n = path.to_str().expect("Invalid Path").into_cstr();
+        let n = path.to_str().ok_or_else(|| Error::PathNotUTF8(path.clone()))?.into_cstr();
         let ret = unsafe { sys::lzc_exists(n.as_ref().as_ptr()) };
 
         if ret == 1 {
@@ -91,8 +89,9 @@ impl ZfsEngine for ZfsLzc {
 
         //let mut props = nvpair::NvList::new()?;
         let mut props = NvList::default();
-        let name_c_string =
-            CString::new(request.name().to_str().expect("Non UTF-8 name")).expect("NULL in name");
+        let name_c_string = CString::new(
+            request.name().to_str().ok_or_else(|| Error::PathNotUTF8(request.name().clone()))?,
+        )?;
         // LZC wants _everything_ as u64 even booleans.
         if let Some(acl_inherit) = request.acl_inherit {
             props.insert_u64(AclInheritMode::nv_key(), acl_inherit.as_nv_value())?;
@@ -242,10 +241,12 @@ impl ZfsEngine for ZfsLzc {
         user_properties: Option<HashMap<String, String>>,
     ) -> Result<()> {
         let fsname = fsname.into();
-        let fsname_c_string = fsname.to_str().expect("Non UTF-8 name").into_cstr();
+        let fsname_c_string =
+            fsname.to_str().ok_or_else(|| Error::PathNotUTF8(fsname.clone()))?.into_cstr();
 
         let origin = origin.into();
-        let origin_c_string = origin.to_str().expect("Non UTF-8 name").into_cstr();
+        let origin_c_string =
+            origin.to_str().ok_or_else(|| Error::PathNotUTF8(origin.clone()))?.into_cstr();
 
         let mut props = NvList::default();
         if let Some(user_properties) = user_properties {
@@ -410,7 +411,8 @@ impl ZfsEngine for ZfsLzc {
         args: NvList,
     ) -> Result<NvList> {
         let pool = pool.into();
-        let pool_c_string = pool.to_str().expect("Non UTF-8 pool name").into_cstr();
+        let pool_c_string =
+            pool.to_str().ok_or_else(|| Error::PathNotUTF8(pool.clone()))?.into_cstr();
         let prog_c_string = program.into_cstr();
 
         let mut out_nvlist_ptr = null_mut();

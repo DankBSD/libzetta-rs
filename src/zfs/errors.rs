@@ -21,6 +21,11 @@ quick_error! {
             cause(err)
             from()
         }
+        CStringNul(err: std::ffi::NulError) {
+            cause(err)
+            from()
+        }
+        PathNotUTF8(path: PathBuf) {}
         Unknown {}
         UnknownSoFar(err: String) {}
         DatasetNotFound(dataset: PathBuf) {}
@@ -47,6 +52,8 @@ impl Error {
             Error::LZCInitializationFailed(_) => ErrorKind::LZCInitializationFailed,
             Error::NvOpError(_) => ErrorKind::NvOpError,
             Error::Io(_) => ErrorKind::Io,
+            Error::CStringNul(_) => ErrorKind::CStringNul,
+            Error::PathNotUTF8(_) => ErrorKind::PathNotUTF8,
             Error::DatasetNotFound(_) => ErrorKind::DatasetNotFound,
             Error::Unknown | Error::UnknownSoFar(_) => ErrorKind::Unknown,
             Error::ValidationErrors(_) => ErrorKind::ValidationErrors,
@@ -88,6 +95,8 @@ pub enum ErrorKind {
     NvOpError,
     InvalidInput,
     Io,
+    CStringNul,
+    PathNotUTF8,
     Unknown,
     DatasetNotFound,
     ValidationErrors,
